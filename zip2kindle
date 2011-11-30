@@ -1,0 +1,21 @@
+#!/bin/zsh
+#
+# Zipped image to PDF converter (kindle optimized)
+#
+
+WD=`mktemp -d /tmp/zi2pdf.XXXXX`
+
+function cleanup() {
+	rm -rf "${WD}"
+}
+
+trap cleanup EXIT INT QUIT TERM
+
+unzip -q "$1" -d "$WD"
+for f in $WD/**/*.(jpg|jpeg|JPG|JPEG|png|PNG); do
+	convert -colorspace gray -geometry 560x735 \
+		-gamma 0.8 "$f" "${f}.tmp"
+	mv "${f}.tmp" "$f"
+done
+
+convert $WD/**/*.(jpg|jpeg|JPG|JPEG|png|PNG) "${1%.zip}.pdf"
