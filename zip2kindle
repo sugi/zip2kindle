@@ -12,10 +12,11 @@ function cleanup() {
 trap cleanup EXIT INT QUIT TERM
 
 unzip -q "$1" -d "$WD"
-for f in $WD/**/*.(jpg|jpeg|JPG|JPEG|png|PNG); do
-	convert -colorspace gray -geometry 560x735 \
-		-gamma 0.8 "$f" "${f}.tmp"
-	mv "${f}.tmp" "$f"
+for f in $WD/**/*.(jpg|jpeg|JPG|JPEG|png|PNG|bmp|BMP|gif|GIF|tiff|TIFF|tif|TIF); do
+	convert -strip -geometry 560x735 -colorspace gray \
+		-auto-level -gamma 0.92 -dither Riemersma \
+		-colors 16 \
+		"$f" "${f#.*}-tmp.png"
 done
 
-convert $WD/**/*.(jpg|jpeg|JPG|JPEG|png|PNG) "${1%.zip}.pdf"
+convert $WD/**/*-tmp.png "${1%.zip}.pdf"
